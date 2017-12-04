@@ -138,7 +138,7 @@ class Compiler():
       self.ostream.write("</parameterList>")
       return var  
         
-    def compileVarDec():
+    def compileVarDec(self, token):
       #Example:
       #<varDec>
       #  <keyword> var </keyword>
@@ -146,7 +146,31 @@ class Compiler():
       #  <identifier> game </identifier>
       #  <symbol> ; </symbol>
       #</varDec>
-        
+      code = "<varDec><keyword>" + str(token) + "</keyword>"
+      var  = self.tokenizer.advance()
+      if var in ["char", "boolean", "int"]:
+          code += "<keyword>" + str(var) + "</keyword>"
+      else:
+          code += "<identifier>" + str(var) + "</identifier>"
+      var  = self.tokenizer.advance()
+      code+= "<identifier>" + str(var) + "</identifier>"
+      self.ostream.write(code)
+      code = ""
+      var  = self.tokenizer.advance()
+      while var == ",":
+          code += "<symbol>" + str(var) + "</symbol>"
+          code += "<identifier>" + str(self.tokenizer.advance()) + "</identifier>"
+          self.ostream.write(code)
+          code  = ""
+          var   = self.tokenizer.advance()
+      code = "<symbol>" + var + "</symbol></varDec>"
+      self.ostream.write(code)
+      code = ""
+      var  = self.tokenizer.advance()
+      if var == "var":
+          reutn self.compileVarDec(var)
+      return var
+  
     def compileStatements():
         
     def compileDo():
