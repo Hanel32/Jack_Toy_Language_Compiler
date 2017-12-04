@@ -5,12 +5,13 @@ Created on Fri Dec 01 22:43:14 2017
 @author: Carson
 """
 class Compiler():
-    def __init__(self, istream, ostream):
+    def __init__(self, istream, ostream, tokenizer):
+        self.tokenizer = tokenizer;
         self.istream = open(istream, 'r')
         self.ostream = open(ostream, 'w')
         self.compileClass()
         
-    def compileClass():
+    def compileClass(self, token):
       #Example:
       #    <class>
       #    <keyword> class </keyword>
@@ -22,8 +23,17 @@ class Compiler():
       #              <identifier> test </identifier>
       #              <symbol> ; </symbol>
       #             </classVarDec>
+      code  = "<class><keyword>" + token + "</keyword>"
+      tokenizer.advance()      
+      code += "<identifier>" + tokenizer.identifier() + "</identifier>"
+      ostream.write(code)
+      tokenizer.advance()
+      if(tokenizer.tokenType == "SYMBOL"):
+        bracket = tokenizer.symbol()
+        code    = "<symbol>" + bracket + "<symbol>"
+      tokenizer.advance()
       
-        
+      
     def compileClassVarDec():  
       # Example:
       #   <classVarDec>
