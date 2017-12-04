@@ -49,12 +49,14 @@ class JackTokenizer():
         self.filecont  = []
         self.stream    = open(instream, mode = 'r')
         for line in self.stream:
-            line = line.split("//")[0] #Should split to the right of the //, may do left. -1 if so
-            if line != "":
-                for word in line:
-                    self.filecont.append(word.replace("\n",""))
-        self.currCmd   = ""
-        
+            line = line.split("//")[0]
+            line = line.split("/**")[0]
+            line = line.split("**\\")[-1]
+            line = line.split()
+            for char in line:
+                sym_split = "{|}|\(|\)|\[|\]|\.|,|;|\+|-|\*|/|&|\||<|>|=|~"
+                self.filecont += re.split("(" + sym_split + ")", char)
+        self.filecont = [word for word in self.filecont if word not in ["",'']]
         
     def hasMoreTokens(self):
         if self.curritr < len(self.filecont):
@@ -66,9 +68,8 @@ class JackTokenizer():
         self.curritr += 1
         if self.hasMoreTokens():
             self.currCmd = self.filecont[self.curritr]
-            return
-        print "No additional commands. Advance impossible."
-        return
+            return self.currCmd
+        return 
     
     def tokenType(self):
         token = self.currToken
