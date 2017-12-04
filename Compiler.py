@@ -163,15 +163,25 @@ class Compiler():
           self.ostream.write(code)
           code  = ""
           var   = self.tokenizer.advance()
-      code = "<symbol>" + var + "</symbol></varDec>"
+      code = "<symbol>" + str(var) + "</symbol></varDec>"
       self.ostream.write(code)
       code = ""
       var  = self.tokenizer.advance()
       if var == "var":
-          reutn self.compileVarDec(var)
+          return self.compileVarDec(var)
       return var
   
-    def compileStatements():
+    def compileStatements(self, token):
+        if token == "while":
+            return self.compileWhile(token)
+        elif token == "if":
+            return self.compileIf(token)
+        elif token == "return":
+            return self.compileReturn(token)
+        elif token == "do":
+            return self.compileDo(token)
+        elif token == "let":
+            return self.compileLet(token)
         
     def compileDo():
         
@@ -183,8 +193,20 @@ class Compiler():
         
     def compileIf():
         
-    def compileExpression():
+    def compileExpression(self, token):
+        self.ostream.write("<expression>")
+        var  = self.compileTerm(token)
+        self.ostream.write("</expression")
+        return var
         
     def compileTerm():
         
-    def compileExpressionList():
+    def compileExpressionList(self, token):
+        self.ostream.write("<expressionlist>")
+        var  = self.compileExpression(token)
+        code = ""
+        while var == ",":
+            self.ostream.write("<symbol>" + str(var) + "</symbol>")
+            var = self.compileExpression(self.tokenizer.advance())
+        return var
+            
