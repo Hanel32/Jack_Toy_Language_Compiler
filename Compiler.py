@@ -99,7 +99,7 @@ class Compiler():
       code  = ""
       var   = self.tokenizer.advance()
       if var != ")":
-          self.compileParamList(var)
+          self.compileParameterList(var)
       else:
           code += "<parameterList></parameterList>"
       code += "<symbol>" + str(var) + "</symbol>"
@@ -120,11 +120,23 @@ class Compiler():
           var = self.compileSubroutine(var)
       return var
   
-    def compileParameterList():
+    def compileParameterList(self, token):
       #Example:
       #  <parameterList>
       #  </parameterList>
-
+      code  = "<parameterList>"
+      code += "<keyword>" + str(token) + "</keyword>"
+      code += "<identifier>" + str(self.tokenizer.advance()) + "</identifier>"
+      self.ostream.write(code)
+      code  = ""
+      var   = self.tokenizer.advance()
+      if var == ",":
+          code += "<symbol>" + var + "</symbol>"
+          self.ostream.write(code)
+          var = self.tokenizer.advance()
+          return self.compileParamList(token)
+      self.ostream.write("</parameterList>")
+      return var  
         
     def compileVarDec():
       #Example:
