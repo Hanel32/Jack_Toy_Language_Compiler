@@ -9,7 +9,7 @@ class Compiler():
         self.tokenizer = tokenizer;
         self.istream = open(istream, 'r')
         self.ostream = open(ostream, 'w')
-        self.compileClass()
+        self.compileClass(tokenizer.advance())
         
     def compileClass(self, token):
       #Example:
@@ -23,18 +23,23 @@ class Compiler():
       #              <identifier> test </identifier>
       #              <symbol> ; </symbol>
       #             </classVarDec>
-      code  = "<class><keyword>" + token + "</keyword>"
-      tokenizer.advance()      
-      code += "<identifier>" + tokenizer.identifier() + "</identifier>"
+      code  = "<class><keyword>" + str(token) + "</keyword>" 
+      code += "<identifier>" + str(self.tokenizer.advance()) + "</identifier>"
       ostream.write(code)
-      tokenizer.advance()
-      if(tokenizer.tokenType == "SYMBOL"):
-        bracket = tokenizer.symbol()
-        code    = "<symbol>" + bracket + "<symbol>"
-      tokenizer.advance()
+      temp = self.tokenizer.advance()
+      if(self.tokenizer.tokenType == "SYMBOL"):
+          code    = "<symbol>" + temp + "<symbol>"
+          ostream.write(code)
+      temp = self.tokenizer.advance()
+      while temp.lower() in ["static", "field"]:
+          temp = self.compileClassVarDec(temp)
+      while temp.lower() in ["method", "constructor", "function"]:
+          temp = self.compileSubroutine(temp)
+      code = "<symbol>" + str(temp) + "</symbol></class>"
+      ostream.write(code)
+      ostream.close()
       
-      
-    def compileClassVarDec():  
+    def compileClassVarDec(self, token):  
       # Example:
       #   <classVarDec>
       #    <keyword> static </keyword>
@@ -42,9 +47,32 @@ class Compiler():
       #    <identifier> test </identifier>
       #    <symbol> ; </symbol>
       #   </classVarDec>
+      code  = "<classVarDec><keyword>" + str(token) + "</keyword>"
+      var   = self.tokenizer.advance()
+      if var in ["int", "boolean", "char"]:
+          code += "<keyword>" + var + "</keyword>"
+      else:
+          code += "<identifier>" + var + "</identifier>"
+      code += "<identifier>" + self.tokenizer.advance() + "</identifier>"
+      ostream.write(code)
+      code  = ""
+      var   = self.tokenizer.advance()
+      while var == ",":
+          var = self.tokenizer.advance()
+          code += "<symbol>" + str(var) + "</symbol>"
+          var = self.tokenizer.advance()
+          code += "<identifier>" + str(var) + "</identifier>"
+          var = self.tokenizer.advance()
+      code += "<symbol>" + token + "</symbol></classVarDec>"
+      self.ostream.write(code)
+      code = ""
+      var = self.tokenizer.advance()
+      if var in ["static", "field"]:
+          return self.compileClassVarDec(var)
+      return var
 
         
-    def compileSubroutine():
+    def compileSubroutine(self, token):
       # Example:
       #    <subroutineDec>
       #    <keyword> function </keyword>
@@ -57,7 +85,41 @@ class Compiler():
       #             <subroutineBody>
       #              <symbol> { </symbol>
       #                        <varDec>
-      
+      code = "<subroutineDec><keyword>" + str(token) + "</keyword>"
+      var = ""
+      if token == "constructor":
+          var = self.tokenizer.advance()
+          code += "<identifier>" + str(var) + "</identifier>"
+      else:
+          var = self.tokenizer.advance()
+          code += "<keyword>" + str(var) + "</keyword>"
+      code += "<identifier>" + str(self.tokenizer.advance()) + "</identifier>"
+      code += "<symbol>" + str(self.tokenizer.advance()) + "</symbol>"
+      self.ostream.write(code)
+      code  = ""
+      var   = self.tokenizer.advance()
+      if var != ")":
+          self.compileParamList(var)
+      else:
+          code += "<parameterList></parameterList>"
+      code += "<symbol>" + str(var) + "</symbol>"
+      code += "<subroutineBody><symbol>" + str(self.tokenizer.advance()) + "</symbol>"
+      self.ostream.write(code)
+      code  = ""
+      var = self.tokenizer.advance()
+      if var == "var":
+          var = self.compileVarDec(var)
+      self.ostream.write("<statements>")
+      while var not in ["}", None]:
+          var = self.compileStatement(var)
+      code += "</statements><symbol>" + var + "</symbol></subroutineBody></subroutineDec>"
+      self.ostream.write(code)
+      code = ""
+      var = self.tokenizer.advance()
+      if var in ["method", "constructor", "function"]:
+          var = self.compileSubroutine(var)
+      return var
+  
     def compileParameterList():
       #Example:
       #  <parameterList>
