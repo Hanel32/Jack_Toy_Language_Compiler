@@ -1,316 +1,16 @@
- # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Created on Fri Dec 01 22:43:14 2017
 
 @author: Carson
 """
-
 class Compiler():
-    def __init__(self, istream):
-        self.ostream = istream.replace(".xml","F.xml")
-        self.istream = open(istream, mode = 'r')
-        self.stream = open(self.ostream, mode = 'w')
-        self.lastWrittenLine = ""
-
-        nextLine()
-        generalParse(nextLine())
-        nextLine()
-
-    def nextLine(self):
-        self.istream.readline()
-    
-    def writeLine(self, s):
-        self.lastWrittenLine = s
-        self.stream.write(s + "\n")
-
-    def generalParse(self, line):
-            segments = line.split()
-            if segments[0] == "<keyword>":
-                keyWordParse(line)
-                generalParse(nextLine())
-            
-            if segments[0] == "<symbol>":
-                symbolParse(line)
-                generalParse(nextLine())
-                 
-            if segments[0] == "<identifier>":
-                writeLine(line)
-                generalParse(nextLine())
-            
-            if segments[0] == "<stringConstant>":
-                writeLine(line)
-                generalParse(nextLine())
-            
-            if segments[0] == "<intConstant>":
-                writeLine(line)
-                generalParse(nextLine())
-
-    def keyWordParse(self, line):
-        segments = line.split()
-            if segments[1] == "class":
-                writeLine("<class>")
-                writeLine(line)
-                writeLine(nextLint())
-                writeLine(nextLine())
-                line  = nextLine()
-                if(line.split()[1] == "static" | line.split()[1] == "field"):
-                    writeLine("<classVarDec>")
-                    while(line.split()[1] == "static" | line.split()[1] == "field"):
-                        writeLine(line)
-                        writeLine(nextLint())
-                        writeLine(nextLine())
-                        writeLine(nextLine())
-                        temp = nextLine()
-                    writeLine("</classVarDec>")
-                    
-                if(line.split()[1] == "constructor" | line.split()[1] == "function" | line.split()[1] == "method"):
-                    writeLine("<subRoutineDec>")
-                    while(line.split()[1] == "constructor" | line.split()[1] == "function" | line.split()[1] == "method"):
-                        writeLine(line)
-                        writeLine(nextLint())
-                        writeLine(nextLine())
-                        parameterListParse(nextLine())
-                        temp = nextLine()
-                    writeLine("<subRoutineBody>")
-                    writeLine(temp)
-                    temp = nextLine()
-                    writeLine("<varDec>")
-                    while(temp.split()[1] == "var"):
-                        writeLine(temp)
-                        writeLine(nextLine())
-                        writeLine(nextLine())
-                        writeLine(nextLine())
-                        temp = nextLine()
-                    writeLine("</varDec>")
-                    writeLine("<statements>")
-
-                    statementParse(temp)
-                    
-                    writeLine("</statements>")
-                    writeLine(nextLine())
-                    writeLine("</subRoutineBody>")
-                    writeLine("</subRoutineDec>")
-                writeLine(nextLine())
-                writeLine("<class>")
-
-                        
-            if segments[1] == "function":
-                writeLine(line)
-
-            if segments[1] == "if":
-            if segments[1] == "else":
-            if segments[1] == "while":
-            if segments[1] == "var":
-            if segments[1] == "let":
-            if segments[1] == "do":
-            if segments[1] == "return":
-                
-            if segments[1] == "constructor":
-            if segments[1] == "method":
-            if segments[1] == "field":
-            if segments[1] == "static":
-            
-            else:
-                writeLine(line)                
-    
-    def statementParse(self, line):
-        while(temp.split()[1] == "let" | temp.split()[1] == "if" | temp.split()[1] == "while" | temp.split()[1] == "do" | temp.split()[1] == "return" ):
-            if temp.split()[1] == "let":
-                writeLine("<letStatement>")
-                writeLine(temp)
-                writeLine(nextLine())
-                temp = nextLine()
-                if temp.split()[1] = "[":
-                    writeLine(temp)
-                    expressionParse(nextLine())
-                    writeLine(nextLine())
-                writeLine(nextLine())
-                expressionParse(nextLine())
-                writeLine(nextLine())
-
-                writeLine("<\letStatement>")
-            if temp.split()[1] == "if":
-            if temp.split()[1] == "while":
-            if temp.split()[1] == "do":
-            if temp.split()[1] == "return":
-
-
-    def expressionParse(self, line):
-        termParse(line)
-
-    def termParse(self, line):
-        if line.split()[0] == "<identifier>":
-            temp = nextLine()
-            if temp.split()[1] == "[":
-                writeLine(line)
-                writeLine(temp)
-                expressionParse(nextLine())
-                writeLine(nextLine())
-            else:
-
+    def __init__(self, istream, ostream, tokenizer):
+        self.tokenizer = tokenizer;
+        self.istream = open(istream, 'r')
+        self.ostream = open(ostream, 'w')
+        self.compileClass(tokenizer.advance())
         
-        
-
-    def parameterListParse(self, line):
-        writeLine(line)
-        writeline("<parameterList>")
-        line = nextLine()
-        while(line.split()[1] != ")"):
-            writeLine(line)
-            writeLine(nextLine())
-            line = nextLine()
-        writeline("</parameterList>")
-        writeLine(line)
-
-    def symbolParse(self, line):
-        segments = line.split()
-        
-        if segments[1] == "(":
-            if self.lastWrittenLine.split()[0] != "<symbol>":
-                writeLine(line)
-                writeLine("<parameterList>")
-                temp = nextLine()
-                while(temp.split()[1] != ")"):
-                    writeLine(temp)
-                    temp = nextLine()
-                writeLine("</parameterList>")
-                writeLine(temp)
-
-'''
-                
-                if segments[1] == "function":
-                    fileCont.insert(i,"<subroutineDec>\n")
-                    self.ostream.write(token)
-                    self.parseClass(self.istream.readline())
-                    self.parseClass(self.istream.readline())
-                    self.ostream.write(self.istream.readline()+"\n")
-                    self.ostream.write("<parameterList>\n")
-                    temp = self.istream.readline() 
-                    while temp != "<symbol> ) </symbol>":
-                        self.ostream.write(temp + "\n")
-                        temp = self.istream.readline() 
-                    self.ostream.write("</parameterList>\n")
-                    self.ostream.write(temp)
-                    self.ostream.write("<subroutineBody>\n")
-                    self.parseClass(self.istream.readline())
-                    self.ostream.write("</subroutineBody>\n")
-                    return
-
-                if segments[1] == "var":
-                    self.ostream.write("<varDec>\n")
-                    self.ostream.write(token)
-                    self.parseClass(self.istream.readline())
-                    self.parseClass(self.istream.readline())
-                    self.parseClass(self.istream.readline())
-                    self.ostream.write("</varDec>\n")
-                    self.parseClass(self, self.istream.readline())
-                    return
-
-                if segments[1] == "let": #not done
-                    endFlag = False
-                    if self.stateFlag == False:
-                        endFlag = True
-                        self.stateFlag = True
-                        self.ostream.write("<statements>\n")
-                    self.ostream.write("<letStatement>\n")
-                    self.ostream.write(token + "\n")
-                    self.parseClass(self.istream.readline())
-                    self.parseClass(self.istream.readline())
-                    self.parseClass(self.istream.readline())
-                    self.ostream.write("<expression>\n")
-                    self.ostream.write("<term>\n")
-                    self.ostream.write("<term>\n")
-                    self.ostream.write("</expression>\n")
-                    self.ostream.write("</letStatement>\n")
-                    if self.endFlag == True:
-                        self.ostream.write("<\statements>\n")
-                    self.parseClass(self.istream.readline())
-
-                if segments[1] == "do":
-                    endFlag = False
-                    if self.stateFlag == False:
-                        endFlag = True
-                        self.stateFlag = True
-                        self.ostream.write("<statements>\n")
-
-                    self.ostream.write("<doStatement>\n")
-                    self.ostream.write(token + "\n")
-                    self.parseClass(self.istream.readline())
-                    self.parseClass(self.istream.readline())
-                    self.parseClass(self.istream.readline())
-                    self.parseClass(self.istream.readline())
-                    self.parseClass(self.istream.readline())
-                    self.ostream.write("</doStatement>\n")
-                    
-                    if self.endFlag == True:
-                        self.ostream.write("<\statements>\n")
-                    
-                    self.parseClass(self.istream.readline())
-
-
-                if segments[1] == "return":
-                    self.ostream.write("<returnStatement>\n")
-                    self.ostream.write(token + "\n")
-                    self.parseClass(self.istream.readline())
-                    self.ostream.write("</returnStatement>\n")
-                    return
-           
-                if segments[1] == "void":
-                    self.ostream.write(token + "\n")
-                    return
-                     
-                print "error! unknown keyword: " + token
-                return
-
-'''
-
-'''
-            if segments [1] == "(":
-                self.ostream.write(token)
-                self.ostream.write("<expressionList>\n")
-                self.parseClass(self.istream.readline())
-                temp = self.istream.readline() 
-                while temp != "<symbol> ) </symbol>":
-                    if temp.split()[0] == "identifier":
-                        self.ostream.write("<term>\n")
-                        self.ostream.write(temp + "\n")
-                        self.ostream.write("</term>\n")
-                    if temp.split()[0] == "<symbol>":
-                        self.ostream.write(temp + "\n")
-                    else:
-                        print "unknown token in expression: " + temp + "\n"
-
-                self.ostream.write("</expressionList>\n")
-                self.ostream.write(temp + "\n")
-                self.parseClass(self.istream.readline())
-                return
-            
-            if segments [1] == ")":
-                self.ostream.write(token)
-                self.ostream.write("<\expression>\n")
-                return
-            
-            if segments [1] == "{":
-                self.ostream.write(token)
-                self.parseClass(self.istream.readline())
-                return
-            
-            if segments [1] == "}":
-                self.ostream.write(token)
-                return
-            
-            if segments [1] == ";":
-                self.ostream.write(token)
-                return
-            if segments [1] == ".":
-                self.ostream.write(token)
-                return
-            
-            print "error! unknown symbol: " + token
-            return
-
-'''
-'''
     def compileClass(self, token):
       #Example:
       #    <class>
@@ -323,21 +23,21 @@ class Compiler():
       #              <identifier> test </identifier>
       #              <symbol> ; </symbol>
       #             </classVarDec>
-      code  = "<class>\n" + str(token) 
-      code += self.istream.readline()
-      self.ostream.write(code)
-      temp = self.istream.readline()
-      if(temp == "<symbol> { </symbol>\n"):
-          code    = temp
-          self.ostream.write(code)
-      temp = self.istream.readline()
+      code  = "<class><keyword>" + str(token) + "</keyword>" 
+      code += "<identifier>" + str(self.tokenizer.advance()) + "</identifier>"
+      ostream.write(code)
+      temp = self.tokenizer.advance()
+      if(self.tokenizer.tokenType == "SYMBOL"):
+          code    = "<symbol>" + temp + "<symbol>"
+          ostream.write(code)
+      temp = self.tokenizer.advance()
       while temp.lower() in ["static", "field"]:
           temp = self.compileClassVarDec(temp)
       while temp.lower() in ["method", "constructor", "function"]:
           temp = self.compileSubroutine(temp)
-      code = str(temp) + "\n</class>"
-      self.ostream.write(code)
-      self.ostream.close()
+      code = "<symbol>" + str(temp) + "</symbol></class>"
+      ostream.write(code)
+      ostream.close()
       
     def compileClassVarDec(self, token):  
       # Example:
@@ -347,26 +47,26 @@ class Compiler():
       #    <identifier> test </identifier>
       #    <symbol> ; </symbol>
       #   </classVarDec>
-      code  = "<classVarDec>\n" + str(token)
-      var   = self.istream.readline()
+      code  = "<classVarDec><keyword>" + str(token) + "</keyword>"
+      var   = self.tokenizer.advance()
       if var in ["int", "boolean", "char"]:
-          code += var
+          code += "<keyword>" + var + "</keyword>"
       else:
-          code += var
-      code += self.istream.readline()
-      self.ostream.write(code)
+          code += "<identifier>" + var + "</identifier>"
+      code += "<identifier>" + self.tokenizer.advance() + "</identifier>"
+      ostream.write(code)
       code  = ""
-      var   = self.istream.readline()
+      var   = self.tokenizer.advance()
       while var == ",":
-          var = self.istream.readline()
-          code += str(var)
-          var = self.istream.readline()
-          code += str(var)
-          var = self.istream.readline()
-      code += token + "\n</classVarDec>"
+          var = self.tokenizer.advance()
+          code += "<symbol>" + str(var) + "</symbol>"
+          var = self.tokenizer.advance()
+          code += "<identifier>" + str(var) + "</identifier>"
+          var = self.tokenizer.advance()
+      code += "<symbol>" + token + "</symbol></classVarDec>"
       self.ostream.write(code)
       code = ""
-      var = self.istream.readline()
+      var = self.tokenizer.advance()
       if var in ["static", "field"]:
           return self.compileClassVarDec(var)
       return var
@@ -385,37 +85,37 @@ class Compiler():
       #             <subroutineBody>
       #              <symbol> { </symbol>
       #                        <varDec>
-      code = "<subroutineDec>\n" + str(token)
+      code = "<subroutineDec><keyword>" + str(token) + "</keyword>"
       var = ""
       if token == "constructor":
-          var = self.istream.readline()
-          code += str(var)
+          var = self.tokenizer.advance()
+          code += "<identifier>" + str(var) + "</identifier>"
       else:
-          var = self.istream.readline()
-          code += str(var)
-      code += str(self.istream.readline())
-      code += str(self.istream.readline())
+          var = self.tokenizer.advance()
+          code += "<keyword>" + str(var) + "</keyword>"
+      code += "<identifier>" + str(self.tokenizer.advance()) + "</identifier>"
+      code += "<symbol>" + str(self.tokenizer.advance()) + "</symbol>"
       self.ostream.write(code)
       code  = ""
-      var   = self.istream.readline()
+      var   = self.tokenizer.advance()
       if var != ")":
           self.compileParameterList(var)
       else:
           code += "<parameterList></parameterList>"
-      code += str(var)
-      code += "<subroutineBody>\n" + str(self.istream.readline())
+      code += "<symbol>" + str(var) + "</symbol>"
+      code += "<subroutineBody><symbol>" + str(self.tokenizer.advance()) + "</symbol>"
       self.ostream.write(code)
       code  = ""
-      var = self.istream.readline()
+      var = self.tokenizer.advance()
       if var == "var":
           var = self.compileVarDec(var)
-      self.ostream.write("<statements>\n")
+      self.ostream.write("<statements>")
       while var not in ["}", None]:
           var = self.compileStatement(var)
-      code += "</statements>" + var + "\n</subroutineBody>\n</subroutineDec>"
+      code += "</statements><symbol>" + var + "</symbol></subroutineBody></subroutineDec>"
       self.ostream.write(code)
       code = ""
-      var = self.istream.readline()
+      var = self.tokenizer.advance()
       if var in ["method", "constructor", "function"]:
           var = self.compileSubroutine(var)
       return var
@@ -424,18 +124,18 @@ class Compiler():
       #Example:
       #  <parameterList>
       #  </parameterList>
-      code  = "<parameterList>\n"
-      code += str(token)
-      code += str(self.istream.readline())
+      code  = "<parameterList>"
+      code += "<keyword>" + str(token) + "</keyword>"
+      code += "<identifier>" + str(self.tokenizer.advance()) + "</identifier>"
       self.ostream.write(code)
       code  = ""
-      var   = self.istream.readline()
+      var   = self.tokenizer.advance()
       if var == ",":
-          code += var
+          code += "<symbol>" + var + "</symbol>"
           self.ostream.write(code)
-          var = self.istream.readline()
+          var = self.tokenizer.advance()
           return self.compileParamList(token)
-      self.ostream.write("\n</parameterList>")
+      self.ostream.write("</parameterList>")
       return var  
         
     def compileVarDec(self, token):
@@ -446,27 +146,27 @@ class Compiler():
       #  <identifier> game </identifier>
       #  <symbol> ; </symbol>
       #</varDec>
-      code = "<varDec>\n" + str(token)
-      var  = self.istream.readline()
+      code = "<varDec><keyword>" + str(token) + "</keyword>"
+      var  = self.tokenizer.advance()
       if var in ["char", "boolean", "int"]:
-          code += str(var)
+          code += "<keyword>" + str(var) + "</keyword>"
       else:
-          code += str(var)
-      var  = self.istream.readline()
-      code += str(var)
+          code += "<identifier>" + str(var) + "</identifier>"
+      var  = self.tokenizer.advance()
+      code+= "<identifier>" + str(var) + "</identifier>"
       self.ostream.write(code)
       code = ""
-      var  = self.istream.readline()
+      var  = self.tokenizer.advance()
       while var == ",":
-          code += str(var)
-          code += str(self.istream.readline())
+          code += "<symbol>" + str(var) + "</symbol>"
+          code += "<identifier>" + str(self.tokenizer.advance()) + "</identifier>"
           self.ostream.write(code)
           code  = ""
-          var   = self.istream.readline()
-      code = str(var) + "<\n/varDec>"
+          var   = self.tokenizer.advance()
+      code = "<symbol>" + str(var) + "</symbol></varDec>"
       self.ostream.write(code)
       code = ""
-      var  = self.istream.readline()
+      var  = self.tokenizer.advance()
       if var == "var":
           return self.compileVarDec(var)
       return var
@@ -484,20 +184,125 @@ class Compiler():
             return self.compileLet(token)
         
     def compileDo(self, token):
-        return token
-        
+        code  = "<doStatement><keyword>" + str(token) + "</keyword>"
+        code += "<identifier>" + str(self.tokenizer.advance()) + "</identifier>"
+        var   = self.tokenizer.advance()
+        if var == ".":
+            code += "<symbol>" + str(var) + "</symbol>"
+            code += "<identifier>" + str(self.tokenizer.advance()) + "</identifier>"
+            code += "<symbol>" + str(self.tokenizer.advance()) + "</symbol>"
+        else:
+            code += "<symbol>" + str(var) + "</symbol><expressionlist>"
+        self.ostream.write(code)
+        code = ""
+        var  = self.tokenizer.advance()
+        return var
+    
     def compileLet(self, token):
-        return token
+        code  = "<letstatement><keyword>" + str(token) + "</keywword>"
+        code += "<identifier>" + str(self.tokenizer.advance()) + "</identifier>"
+        self.ostream.write(code)
+        var   = self.tokenizer.advance()
+        if var  == "[":
+            code = "<symbol>" + str(var) + "</symbol>"
+            self.ostream.write(code)
+            code = ""
+            var  = self.tokenizer.advance()
+            var  = self.compileExpression(var)
+            code = "<symbol>" + str(var) + "</symbol>"
+            self.ostream.write(code)
+            code = ""
+            var  = self.tokenizer.advance()
+            
+        code = "<symbol" + str(var) + "</symbol>"
+        self.ostream.write(code)
+        code = ""
+        var  = self.tokenizer.advance()
+        var  = self.compileExpression(var)
+        code = "<symbol>" + str(var) + "</symbol></letstatement>"
+        self.ostream.write(code)
+        code = ""
+        var  = self.tokenizer.advance()
+        return var
+        
         
     def compileWhile(self, token):
-        return token
+        var   = self.tokenizer.advance()
+        code  = "<whileStatement><keyword>" + str(token) + "</keyword>"
+        code += "<symbol>" + str(var) + "</symbol>"
+        self.ostream.write(code)
+        code  = ""
+        var   = self.tokenizer.advance()
+        var   = self.compileExpression(var)
+        code  = "<symbol>" + str(var) + "</symbol>"
+        var   = self.tokenizer.advance()
+        code += "<symbol>" + str(var) + "</symbol><statements>"
+        self.ostream.write(code)
+        code  = ""
+        var   = self.tokenizer.advance()
+        while var != "}":
+            var    = self.compileStatement(var)
+        code  = "</statements><symbol>" + str(var) = "</symbol></whilestatement>"
+        self.ostream.write(code)
+        code  = ""
+        var   = self.tokenizer.advance()
+        return var
         
     def compileReturn(self, token):
-        return token
+        code  = "<returnstatement><keyword>" + token + "</keyword>"
+        self.ostream.write(code)
+        code  = ""
+        var   = self.tokenizer.advance()
+        if var != ";":
+            var = self.compileExpression(var)
+        code  = "<symbol>" + str(var) + "</symbol></returnStatement>"
+        self.ostream.write(code)
+        code  = ""
+        var   = self.tokenizer.advance()
+        return var
         
     def compileIf(self, token):
-        return token
-
+        code  = "<ifStatement><keyword>" + str(token) + "</keyword>"
+        var   = self.tokenizer.advance()
+        code += "<symbol>" + str(var) + "</symbol>"
+        self.ostream.write(code)
+        code  = ""
+        var   = self.tokenizer.advance()
+        var   = self.compileExpression(var)
+        code  = "<symbol>" + str(var) + "</symbol>"
+        var   = self.tokenizer.advance()
+        code  = "<symbol>" + str(var) + "</symbol><statements>"
+        self.ostream.write(code)
+        code  = ""
+        var   = self.tokenizer.advance()
+        while var != "}":
+            var = self.compileStatement(var)
+        code  = "</statements><symbol>" + token + "</symbol>"
+        self.ostream.write(code)
+        code  = ""
+        var   = self.tokenizer.advance()
+        if var == "else":
+            var = self.compileElse(var)
+        code  = "</ifStatement>"
+        self.ostream.write(code)
+        return var
+    
+    def compileElse(self, token):
+        code  = "<elseStatement><keyword>" + str(token) + "</keyword>"
+        var   = self.tokenizer.advance()
+        code += "<symbol>" + str(var) + "</symbol><statements>"
+        self.ostream.write(code)
+        code  = ""
+        var   = self.tokenizer.advance()
+        while var != "}":
+            var = self.compileStatement(var)
+        code  = "</statements><symbol>" + str(var) + "</symbol></elseStatement>"
+        self.ostream.write(code)
+        code  = ""
+        return var
+        
+        
+        
     def compileExpression(self, token):
         self.ostream.write("<expression>")
         var  = self.compileTerm(token)
@@ -505,14 +310,107 @@ class Compiler():
         return var
         
     def compileTerm(self, token):
-        return token
+        self.ostream.write("<term>")
+        code = ""
+        if token.isdigit():
+            code += ""
+        elif token[0] == "\"":
+            code  = "<stringConstant>" + str(token) + "</stringConstant>"
+        elif token in ["this", "null", "true", "false"]:
+            code  = "<keyword>" + str(token) + "</keyword>"
+        elif token == "-":
+            code  = "<symbol>" + str(token) + "</symbol>"
+            self.ostream.write(code)
+            code  = ""
+            var   = self.tokenizer.advance()
+            var   = self.compileTerm(var)
+        elif token == "~":
+            return self.compileNotOperator(token)
+        elif token == "(":
+            code  = "<symbol>" + str(token) + "</symbol>"
+            self.ostream.write(code)
+            code  = ""
+            var   = self.tokenizer.advance()
+            var   = self.compileExpression(var)
+            code  = "<symbol>" + str(token) + "</symbol>"
+            self.ostream.write(code)
+            code  = ""
+        elif self.tokenizer.peekAhead() == "[":
+            code  = "<identifier>" + str(token) + "</identifier>"
+            var   = self.tokenizer.advance()
+            code += "<symbol>" + str(var) + "</symbol>"
+            self.ostream.write(code)
+            code  = ""
+            var   = self.tokenizer.advance()
+            var   = self.compileExpression(var)
+            code  = "<symbol>" + str(var) + "</symbol>"
+            self.ostream.write(code)
+            code  = ""
+        elif self.tokenizer.peekAhead() == ".":
+            code  = "<identifier>" + token + "</identifier>"
+            var   = self.tokenizer.advance()
+            code += "<symbol>" + str(var) + "</symbol>"
+            var   = self.tokenizer.advance()
+            code += "<identifier>" + str(var) + "</identifier>"
+            var   = self.tokenizer.advance()
+            code += "<symbol>" + str(var) + "</symbol><expressionList>"
+            self.ostream.write(code)
+            code  = ""
+            var   = self.tokenizer.advance()
+            if var != ")":
+                var = self.compileExpressionList(var)
+                code  = "</expressionList><symbol>" + str(var) + "</symbol>"
+            else:
+                code = "<identifier>" + str(var) + "</identifier>"
+            code += "</term>"
+            self.ostream.write(code)
+            code  = ""
+            var   = self.tokenizer.advance()
+            if var in ["+","<",">","=",",","&","-","*"]:
+                if var in ["<",">","\"","&"]:
+                    if var == "<":
+                        code = "<symbol>&lt;</symbol>"
+                    if var == ">":
+                        code = "<symbol>&gt;</symbol>"
+                    if var == "\"":
+                        code = "<symbol>&quot;</symbol>"
+                    if var == "&":
+                        code = "<symbol>&amp;</symbol>"
+                else:
+                    code = "<symbol>" + str(var) + "</symbol>"
+                self.ostream.write(code)
+                code = ""
+                var  = self.tokenizer.advance()
+                var  = self.compileTerm(var)
+            return var
+                        
+    def compileNotOperator(self, token):
+        code = "<symbol>" + str(token) + "</symbol>"
+        self.ostream.write(code)
+        var  = self.tokenizer.advance()
+        if var != "(":
+            var   = self.compileTerm(var)
+            code  = "</term>"
+            self.ostream.write(code)
+            code  = ""
+            return var
+        else:
+            code  = "<term><symbol>" + str(var) + "</symbol>"
+            self.ostream.write(code)
+            var   = self.tokenizer.advance()
+            var   = self.compileExpression(var)
+            code += "<symbol>" + str(var) + "</symbol></term></term>"
+            self.ostream.write(code)
+            code  = ""
+            var   = self.tokenizer.advance()
+            return var
         
     def compileExpressionList(self, token):
         self.ostream.write("<expressionlist>")
         var  = self.compileExpression(token)
         code = ""
         while var == ",":
-            self.ostream.write(str(var))
-            var = self.compileExpression(self.istream.readline())
+            self.ostream.write("<symbol>" + str(var) + "</symbol>")
+            var = self.compileExpression(self.tokenizer.advance())
         return var
-        '''
+            
