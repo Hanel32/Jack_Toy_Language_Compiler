@@ -193,8 +193,17 @@ class Compiler():
         else:
             code += "<symbol>" + str(var) + "</symbol>"
         self.ostream.write(code)
-        code = ""
-        var  = self.tokenizer.advance()
+        code  = ""
+        var   = self.tokenizer.advance()
+        if var != ")":
+            var   = self.compileExpressionList(var)
+        code += "</expressionList><symbol>" + str(var) + "</symbol>"
+        var   = self.tokenizer.advance()
+        code += "<symbol>" + str(var) + "</symbol></doStatement>"
+        self.ostream.write(code)
+        code  = ""
+        var   = self.tokenizer.advance()
+        
         return var
     
     def compileLet(self, token):
