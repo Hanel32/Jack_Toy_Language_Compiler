@@ -84,7 +84,8 @@ class Compiler():
                     writeLine("</varDec>")
                     writeLine("<statements>")
 
-                    writeLine(temp)
+                    statementParse(temp)
+                    
                     writeLine("</statements>")
                     writeLine(nextLine())
                     writeLine("</subRoutineBody>")
@@ -111,6 +112,44 @@ class Compiler():
             
             else:
                 writeLine(line)                
+    
+    def statementParse(self, line):
+        while(temp.split()[1] == "let" | temp.split()[1] == "if" | temp.split()[1] == "while" | temp.split()[1] == "do" | temp.split()[1] == "return" ):
+            if temp.split()[1] == "let":
+                writeLine("<letStatement>")
+                writeLine(temp)
+                writeLine(nextLine())
+                temp = nextLine()
+                if temp.split()[1] = "[":
+                    writeLine(temp)
+                    expressionParse(nextLine())
+                    writeLine(nextLine())
+                writeLine(nextLine())
+                expressionParse(nextLine())
+                writeLine(nextLine())
+
+                writeLine("<\letStatement>")
+            if temp.split()[1] == "if":
+            if temp.split()[1] == "while":
+            if temp.split()[1] == "do":
+            if temp.split()[1] == "return":
+
+
+    def expressionParse(self, line):
+        termParse(line)
+
+    def termParse(self, line):
+        if line.split()[0] == "<identifier>":
+            temp = nextLine()
+            if temp.split()[1] == "[":
+                writeLine(line)
+                writeLine(temp)
+                expressionParse(nextLine())
+                writeLine(nextLine())
+            else:
+
+        
+        
 
     def parameterListParse(self, line):
         writeLine(line)
