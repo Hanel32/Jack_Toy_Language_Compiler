@@ -308,7 +308,7 @@ class Compiler():
         self.ostream.write("</expression>")
         return var
     
-    def RepresentsInt(s):
+    def RepresentsInt(self, s):
         try: 
             int(s)
             return True
@@ -316,13 +316,16 @@ class Compiler():
             return False
         
     def compileTerm(self, token):
+        var = token
         print "Compiling" + str(token)
         self.ostream.write("<term>")
         code = ""
-        if token.isdigit():
-            code += "<integerConstant>" + str(token) + "</integerConstant>"
+        if self.RepresentsInt(token):
+            code = "<integerConstant>" + str(token) + "</integerConstant>"
         elif token[0] == "\"":
+            print "Handling a string constant: " + str(token)
             code  = "<stringConstant>" + str(token) + "</stringConstant>"
+            print "Code generated: " + str(code)
         elif token in ["this", "null", "true", "false"]:
             code  = "<keyword>" + str(token) + "</keyword>"
         elif token == "-":
@@ -331,7 +334,6 @@ class Compiler():
             code  = ""
             var   = self.tokenizer.advance()
             var   = self.compileTerm(var)
-            token = var
         elif token == "~":
             return self.compileNotOperator(token)
         elif token == "(":
@@ -343,8 +345,8 @@ class Compiler():
             code  = "<symbol>" + str(token) + "</symbol>"
             self.ostream.write(code)
             code  = ""
-            token = var
         elif self.tokenizer.peekAhead() == "[":
+            print "PEEKIN!" + str(self.tokenizer.peekAhead())
             code  = "<identifier>" + str(token) + "</identifier>"
             var   = self.tokenizer.advance()
             code += "<symbol>" + str(var) + "</symbol>"
@@ -355,9 +357,8 @@ class Compiler():
             code  = "<symbol>" + str(var) + "</symbol>"
             self.ostream.write(code)
             code  = ""
-            token = var
         elif self.tokenizer.peekAhead() == ".":
-            print "PEEKIN!"
+            print "PEEKIN!" + str(self.tokenizer.peekAhead())
             code  = "<identifier>" + token + "</identifier>"
             var   = self.tokenizer.advance()
             code += "<symbol>" + str(var) + "</symbol>"
@@ -371,9 +372,9 @@ class Compiler():
             if var != ")":
                 var = self.compileExpressionList(var)
                 code  = "</expressionList><symbol>" + str(var) + "</symbol>"
-            token = var
         else:
             code = "<identifier>" + str(token) + "</identifier>"
+        print "At the end: " + code
         code += "</term>"
         self.ostream.write(code)
         code  = ""
@@ -394,8 +395,7 @@ class Compiler():
             code = ""
             var  = self.tokenizer.advance()
             var  = self.compileTerm(var)
-            token = var
-        return token
+        return var
                         
     def compileNotOperator(self, token):
         code = "<symbol>" + str(token) + "</symbol>"
@@ -421,6 +421,7 @@ class Compiler():
     def compileExpressionList(self, token):
         self.ostream.write("<expressionList>")
         var  = self.compileExpression(token)
+        print "Var is: " + str(var)
         while var == ",":
             self.ostream.write("<symbol>" + str(var) + "</symbol>")
             var = self.compileExpression(self.tokenizer.advance())
