@@ -12,11 +12,5 @@ class JackAnalyzer():
     def __init__(self, filename):
         self.filename  = filename
         self.tokenizer = JackTokenizer(filename)
-        self.testToken()
-        
-    def testToken(self):
-        while(self.tokenizer.hasMoreTokens()):
-            token = self.tokenizer.advance()
-            print token
             
 JackAnalyzer(sys.argv[1])

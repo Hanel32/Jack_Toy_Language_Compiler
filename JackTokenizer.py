@@ -81,6 +81,7 @@ class JackTokenizer():
                 sym_split = "{|}|\(|\)|\[|\]|\.|,|;|\+|-|\*|/|&|\||<|>|=|~"
                 self.filecont += re.split("(" + sym_split + ")", char)
         self.filecont = [word for word in self.filecont if word not in ["",'']]
+        print self.filecont
         compname      = self.filename.replace(".jack", ".xml")
         self.compile  = Compiler(compname, self)
         

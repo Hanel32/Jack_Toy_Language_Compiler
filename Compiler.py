@@ -331,6 +331,7 @@ class Compiler():
             code  = ""
             var   = self.tokenizer.advance()
             var   = self.compileTerm(var)
+            token = var
         elif token == "~":
             return self.compileNotOperator(token)
         elif token == "(":
@@ -342,6 +343,7 @@ class Compiler():
             code  = "<symbol>" + str(token) + "</symbol>"
             self.ostream.write(code)
             code  = ""
+            token = var
         elif self.tokenizer.peekAhead() == "[":
             code  = "<identifier>" + str(token) + "</identifier>"
             var   = self.tokenizer.advance()
@@ -353,7 +355,9 @@ class Compiler():
             code  = "<symbol>" + str(var) + "</symbol>"
             self.ostream.write(code)
             code  = ""
+            token = var
         elif self.tokenizer.peekAhead() == ".":
+            print "PEEKIN!"
             code  = "<identifier>" + token + "</identifier>"
             var   = self.tokenizer.advance()
             code += "<symbol>" + str(var) + "</symbol>"
@@ -367,29 +371,31 @@ class Compiler():
             if var != ")":
                 var = self.compileExpressionList(var)
                 code  = "</expressionList><symbol>" + str(var) + "</symbol>"
+            token = var
+        else:
+            code = "<identifier>" + str(token) + "</identifier>"
+        code += "</term>"
+        self.ostream.write(code)
+        code  = ""
+        var   = self.tokenizer.advance()
+        if var in ["+","<",">","=",",","&","-","*"]:
+            if var in ["<",">","\"","&"]:
+                if var == "<":
+                    code = "<symbol>&lt;</symbol>"
+                elif var == ">":
+                    code = "<symbol>&gt;</symbol>"
+                elif var == "\"":
+                    code = "<symbol>&quot;</symbol>"
+                elif var == "&":
+                    code = "<symbol>&amp;</symbol>"
             else:
-                code = "<identifier>" + str(var) + "</identifier>"
-            code += "</term>"
+                code = "<symbol>" + str(var) + "</symbol>"
             self.ostream.write(code)
-            code  = ""
-            var   = self.tokenizer.advance()
-            if var in ["+","<",">","=",",","&","-","*"]:
-                if var in ["<",">","\"","&"]:
-                    if var == "<":
-                        code = "<symbol>&lt;</symbol>"
-                    if var == ">":
-                        code = "<symbol>&gt;</symbol>"
-                    if var == "\"":
-                        code = "<symbol>&quot;</symbol>"
-                    if var == "&":
-                        code = "<symbol>&amp;</symbol>"
-                else:
-                    code = "<symbol>" + str(var) + "</symbol>"
-                self.ostream.write(code)
-                code = ""
-                var  = self.tokenizer.advance()
-                var  = self.compileTerm(var)
-            return var
+            code = ""
+            var  = self.tokenizer.advance()
+            var  = self.compileTerm(var)
+            token = var
+        return token
                         
     def compileNotOperator(self, token):
         code = "<symbol>" + str(token) + "</symbol>"
@@ -413,7 +419,7 @@ class Compiler():
             return var
         
     def compileExpressionList(self, token):
-        self.ostream.write("<expressionlist>")
+        self.ostream.write("<expressionList>")
         var  = self.compileExpression(token)
         while var == ",":
             self.ostream.write("<symbol>" + str(var) + "</symbol>")
