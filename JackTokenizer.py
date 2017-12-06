@@ -5,6 +5,7 @@ Created on Fri Dec 01 21:32:53 2017
 @author: Carson
 """
 import re
+from Compiler import Compiler
 
 keywords = {'class'       : "CLASS",
             'constructor' : "CONSTRUCTOR",
@@ -43,20 +44,45 @@ def isValidConstant(num):
     
 class JackTokenizer():
     def __init__(self, instream):
-        self.currToken = ""
-        self.curritr   = -1
-        self.filename  = instream
-        self.filecont  = []
-        self.stream    = open(instream, mode = 'r')
+        self.currToken   = ""
+        self.curritr     = -1
+        self.filename    = instream
+        self.filecont    = []
+        self.stream      = open(instream, mode = 'r')
+        self.commentFlag = False 
         for line in self.stream:
             line = line.split("//")[0]
-            line = line.split("/**")[0]
-            line = line.split("**\\")[-1]
-            line = line.split()
+            if(line.find("*/") != -1):
+                tempLine = line
+                tempLine = tempLine.split("*/")[-1]
+                line     = line.split("/**")[0] + tempLine
+            else:
+                line     = line.split("/**")[0]
+                self.commentFlag = True
+                
+            if(line.find("*/") != -1):
+                self.commentFlag = False
+                line = line.split("*/")[-1]
+            if(self.commentFlag and (line.find("*") != -1)):
+                line = ""
+            if(line.find("\"") != -1):
+                tempLine = line
+                line     = []
+                i        = 0
+                j        = 0
+                i        = tempLine.find("\"", 0)
+                j        = tempLine.find("\"", i+1)
+                line    += tempLine[0:i].split()
+                line.append(tempLine[i:(j+1)])
+                line    += tempLine[(j+1):].split()
+            else:
+                line = line.split()
             for char in line:
                 sym_split = "{|}|\(|\)|\[|\]|\.|,|;|\+|-|\*|/|&|\||<|>|=|~"
                 self.filecont += re.split("(" + sym_split + ")", char)
         self.filecont = [word for word in self.filecont if word not in ["",'']]
+        compname      = self.filename.replace(".jack", ".xml")
+        self.compile  = Compiler(compname, self)
         
     def hasMoreTokens(self):
         if self.curritr < len(self.filecont):
