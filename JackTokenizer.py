@@ -31,11 +31,16 @@ symbols  = {'{','}','(',')','[',']',
             '.',',',';','+','-','*',
             '/','&','|','<','>','=',
                                 '~'}
-stringConst = '\"[a-zA-Z0-9]\"'
-identifier  = '^(\d)[a-zA-Z0-9_]*'
+stringConst = '\".+\"'
+identifier  = '^[a-zA-Z0-9_]+'
 
 
 def isValidConstant(num):
+    try:
+        int(num)
+        return True
+    except ValueError:
+        return False
     if num > -1 and num < 32768:
         return True
     else:
@@ -44,15 +49,38 @@ def isValidConstant(num):
 class JackTokenizer():
     def __init__(self, instream):
         self.currToken = ""
-        self.curritr   = -1
+        self.curritr   = 0
         self.filename  = instream
         self.filecont  = []
         self.stream    = open(instream, mode = 'r')
+        self.commentFlag = False
         for line in self.stream:
             line = line.split("//")[0]
-            line = line.split("/**")[0]
-            line = line.split("**\\")[-1]
-            line = line.split()
+            if(line.find("/**") != -1):
+                if(line.find("*/") != -1):
+                    tempLine = line
+                    tempLine = tempLine.split("*/")[-1]
+                    line = line.split("/**")[0] + tempLine
+                else:
+                    line = line.split("/**")[0]
+                    self.commentFlag = True
+            if(line.find("*/") != -1):
+                self.commentFlag = False
+                line = line.split("*/")[-1]
+            if(self.commentFlag and (line.find("*") != -1)):
+                line = ""
+            if(line.find("\"") != -1):
+                tempLine = line
+                line = []
+                i = 0
+                j = 0
+                i = tempLine.find("\"", 0)
+                j = tempLine.find("\"", i+1)
+                line += tempLine[0:i].split()
+                line.append(tempLine[i:(j+1)])
+                line += tempLine[(j+1):].split()
+            else:
+                line = line.split()
             for char in line:
                 sym_split = "{|}|\(|\)|\[|\]|\.|,|;|\+|-|\*|/|&|\||<|>|=|~"
                 self.filecont += re.split("(" + sym_split + ")", char)
@@ -65,10 +93,10 @@ class JackTokenizer():
             return False
         
     def advance(self):
-        self.curritr += 1
         if self.hasMoreTokens():
-            self.currCmd = self.filecont[self.curritr]
-            return self.currCmd
+            self.currToken = self.filecont[self.curritr]
+            self.curritr += 1
+            return self.evalToken()
         return 
     
     def tokenType(self):
@@ -77,60 +105,28 @@ class JackTokenizer():
             return "KEYWORD"
         if token in symbols:
             return "SYMBOL"
+        if isValidConstant(token):
+            return "INT_CONST"
         if re.findall(identifier, token):
             return "IDENTIFIER"
-        if isValidConstant(int(token)):
-            return "INT_CONST"
         if re.findall(stringConst, token):
             return "STRING_CONST"
         
-    def keyWord(self):
-        if self.tokenType() == "KEYWORD":
-            return keywords[self.currToken]
-        else:
-            print "Invalid Type! Not a keyword..."
-            
-    def symbol(self):
-        if self.tokenType() == "SYMBOL":
-            return self.currToken
-        else:
-            print "Invalid Type! Not a symbol..."
-    
-    def identifier(self):
-        if self.tokenType() == "IDENTIFIER":
-            return self.currToken
-        else:
-            print "Invalid Type! Not an identifier..."
-            
-    def intVal(self):
-        if self.tokenType() == "INT_CONST":
-            return int(self.curr)
-        else:
-            print "Invalid Type! Not an integer constant..."
-            
-    def stringVal(self):
+    def evalToken(self):
         token = self.currToken
+        if self.tokenType() == "KEYWORD":
+            return "<keyword> " + self.currToken + " </keyword>\n"
+        if self.tokenType() == "SYMBOL":
+            token = token.replace("&", "&amp;")
+            token = token.replace("\"", "&quot;")
+            token = token.replace(">", "&gt;")
+            token = token.replace("<", "&lt;")
+            return "<symbol> " + token + " </symbol>\n"
+        if self.tokenType() == "IDENTIFIER":
+            return "<identifier> " + token + " </identifier>\n"
+        if self.tokenType() == "INT_CONST":
+            return "<integerConstant> " + token + " </integerConstant>\n"
         if self.tokenType() == "STRING_CONST":
             token = token.replace("\"", "")
-            return token
-            
-            
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            return "<stringConstant> " + token + " </stringConstant>\n"
+        print "error! TokenType not properly handled. token: " + token
