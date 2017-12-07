@@ -57,11 +57,12 @@ class Compiler():
       code  = ""
       var   = self.tokenizer.advance()
       while var == ",":
+          var = self.tokenizer.advance()
           code += "<symbol>" + str(var) + "</symbol>\n"
           var = self.tokenizer.advance()
           code += "<identifier>" + str(var) + "</identifier>\n"
           var = self.tokenizer.advance()
-      code += "<symbol>" + var + "</symbol>\n</classVarDec>\n"
+      code += "<symbol>" + token + "</symbol>\n</classVarDec>\n"
       self.ostream.write(code)
       code = ""
       var = self.tokenizer.advance()
@@ -97,7 +98,7 @@ class Compiler():
       code  = ""
       var   = self.tokenizer.advance()
       if var != ")":
-          var = self.compileParameterList(var)
+          self.compileParameterList(var)
       else:
           code += "<parameterList>\n</parameterList>\n"
       code += "<symbol>" + str(var) + "</symbol>\n"
@@ -128,13 +129,11 @@ class Compiler():
       self.ostream.write(code)
       code  = ""
       var   = self.tokenizer.advance()
-      while var == ",":
+      if var == ",":
           code += "<symbol>" + var + "</symbol>\n"
-          code += "<keyword>" + str(self.tokenizer.advance()) + "</keyword>\n"
-          code += "<identifier>" + str(self.tokenizer.advance()) + "</identifier>\n"
           self.ostream.write(code)
           var = self.tokenizer.advance()
-          code  = ""
+          return self.compileParamList(token)
       self.ostream.write("</parameterList>\n")
       return var  
         
@@ -201,8 +200,6 @@ class Compiler():
         var   = self.tokenizer.advance()
         if var != ")":
             var   = self.compileExpressionList(var)
-        else:
-            code += "<expressionList>\n"
         code += "</expressionList>\n<symbol>" + str(var) + "</symbol>\n"
         var   = self.tokenizer.advance()
         code += "<symbol>" + str(var) + "</symbol>\n</doStatement>\n"
@@ -285,7 +282,7 @@ class Compiler():
         var   = self.compileExpression(var)
         code  = "<symbol>" + str(var) + "</symbol>\n"
         var   = self.tokenizer.advance()
-        code  += "<symbol>" + str(var) + "</symbol>\n<statements>\n"
+        code  = "<symbol>" + str(var) + "</symbol>\n<statements>\n"
         self.ostream.write(code)
         code  = ""
         var   = self.tokenizer.advance()
@@ -388,7 +385,7 @@ class Compiler():
         self.ostream.write(code)
         code  = ""
         var   = self.tokenizer.advance()
-        if var in ["+","<",">","=",",","&","-","*"]:
+        if var in ["+","<",">","=","&","-","*"]:
             if var in ["<",">","\"","&"]:
                 if var == "<":
                     code = "<symbol>&lt;</symbol>\n"
@@ -412,7 +409,7 @@ class Compiler():
         var  = self.tokenizer.advance()
         if var != "(":
             var   = self.compileTerm(var)
-            code  = "</term>\n"
+            code  = "</term>"
             self.ostream.write(code)
             code  = ""
             return var
@@ -431,9 +428,16 @@ class Compiler():
         self.ostream.write("<expression>\n")
         var  = self.compileTerm(token)
         self.ostream.write("</expression>\n")
+<<<<<<< HEAD
         print "Returned from compileTerm: " + str(var)
         while var in ["+","<",">","=","&","-","*", "\"", "/"]:
             print "More expressions compileONE!"
+=======
+        print "WORKING A SINGLE EXPRESSION"
+        print "Var is: " + str(var)
+        while var in ["+","<",">","=","&","-","*", "\"", "/"]:
+            print "Var is: " + str(var)
+>>>>>>> 5685be76b2e814834f6e9d8bca50de4ef6bc3360
             if var in ["<",">","\"","&"]:
                 if var == "<":
                     code = "<symbol>&lt;</symbol>\n"
@@ -444,12 +448,14 @@ class Compiler():
                 elif var == "&":
                     code = "<symbol>&amp;</symbol>\n"
             else:
-                code  = "<symbol>" + str(var) + "</symbol>"
+                code  = "<symbol>" + str(var) + "</symbol>\n"
+            print "CompileExpression code: " + str(code)
             self.ostream.write(code)
             code  = ""
             var   = self.tokenizer.advance()
+            print "CALLING ANOTHER TERM"
             var   = self.compileTerm(var)
-            
+        print "COMPILED A SINGLE EXPRESSION"
         return var
         
     def compileExpressionList(self, token):
@@ -458,7 +464,7 @@ class Compiler():
         var  = self.compileExpression(token)
         print "Var is: " + str(var)
         while var == ",":
-            print "More expressions!"
+            print "More expressions! for " + self.tokenizer.peekAhead()
             self.ostream.write("<symbol>" + str(var) + "</symbol>\n")
             var = self.compileExpression(self.tokenizer.advance())
         return var
