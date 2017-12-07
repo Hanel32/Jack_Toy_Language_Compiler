@@ -63,7 +63,7 @@ class Compiler():
           var = self.tokenizer.advance()
           code += "<identifier>" + str(var) + "</identifier>\n"
           var = self.tokenizer.advance()
-      code += "<symbol>" + token + "</symbol>\n</classVarDec>\n"
+      code += "<symbol>" + var + "</symbol>\n</classVarDec>\n"
       self.ostream.write(code)
       code = ""
       var = self.tokenizer.advance()
@@ -286,7 +286,7 @@ class Compiler():
         var   = self.tokenizer.advance()
         while var != "}":
             var = self.compileStatement(var)
-        code  = "</statements>\n<symbol>" + token + "</symbol>\n"
+        code  = "</statements>\n<symbol>" + var + "</symbol>\n"
         self.ostream.write(code)
         code  = ""
         var   = self.tokenizer.advance()
@@ -297,7 +297,7 @@ class Compiler():
         return var
     
     def compileElse(self, token):
-        code  = "<elseStatement>\n<keyword>" + str(token) + "</keyword>\n"
+        code  = "<keyword>" + str(token) + "</keyword>\n"
         var   = self.tokenizer.advance()
         code += "<symbol>" + str(var) + "</symbol>\n<statements>\n"
         self.ostream.write(code)
@@ -305,7 +305,7 @@ class Compiler():
         var   = self.tokenizer.advance()
         while var != "}":
             var = self.compileStatement(var)
-        code  = "</statements>\n<symbol>" + str(var) + "</symbol>\n</elseStatement>\n"
+        code  = "</statements>\n<symbol>" + str(var) + "</symbol>\n"
         self.ostream.write(code)
         code  = ""
         return var
