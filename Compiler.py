@@ -381,6 +381,10 @@ class Compiler():
                 var = self.compileExpressionList(var)
                 print "Token after expressionList = " + str(var)
                 code  = "</expressionList>\n<symbol>" + str(var) + "</symbol>\n"
+            else:
+                code = "<expressionList>\n</expressionList>\n"
+            var   = self.tokenizer.advance()
+            code += "<symbol>" + str(var) + "</symbol>\n"
         else:
             code = "<identifier>" + str(token) + "</identifier>\n"
         print "At the end: " + code
