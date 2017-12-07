@@ -51,14 +51,14 @@ class JackTokenizer():
         self.commentFlag = False 
         for line in self.stream:
             line = line.split("//")[0]
-            if(line.find("*/") != -1):
-                tempLine = line
-                tempLine = tempLine.split("*/")[-1]
-                line     = line.split("/**")[0] + tempLine
-            else:
-                line     = line.split("/**")[0]
-                self.commentFlag = True
-                
+            if(line.find("/**") != -1):
+                if(line.find("*/") != -1):
+                    tempLine = line
+                    tempLine = tempLine.split("*/")[-1]
+                    line = line.split("/**")[0] + tempLine
+                else:
+                    line = line.split("/**")[0]
+                    self.commentFlag = True
             if(line.find("*/") != -1):
                 self.commentFlag = False
                 line = line.split("*/")[-1]

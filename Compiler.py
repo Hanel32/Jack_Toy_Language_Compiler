@@ -310,7 +310,6 @@ class Compiler():
         code  = ""
         var   = self.tokenizer.advance()
         while var != "}":
-            print "else called compile with token: " + var
             var = self.compileStatement(var)
         code  = "</statements>\n<symbol>" + str(var) + "</symbol>\n"
         self.ostream.write(code)
@@ -340,11 +339,7 @@ class Compiler():
         elif token in ["this", "null", "true", "false"]:
             code  = "<keyword>" + str(token) + "</keyword>\n"
         elif token == "-":
-            code  = "<symbol>" + str(token) + "</symbol>\n"
-            self.ostream.write(code)
-            code  = ""
-            var   = self.tokenizer.advance()
-            var   = self.compileTerm(var)
+            return self.compileNegOperator(token)
         elif token == "~":
             return self.compileNotOperator(token)
         elif token == "(":
@@ -394,7 +389,7 @@ class Compiler():
         self.ostream.write(code)
         code  = ""
         var   = self.tokenizer.advance()
-        if var in ["|", "+","<",">","=","&","-","*"]:
+        if var in ["|", "+","<",">","=","&","-","*","/","\""]:
             if var in ["<",">","\"","&"]:
                 if var == "<":
                     code = "<symbol>&lt;</symbol>\n"
@@ -413,6 +408,26 @@ class Compiler():
         return var
                         
     def compileNotOperator(self, token):
+        code = "<symbol>" + str(token) + "</symbol>\n"
+        self.ostream.write(code)
+        var  = self.tokenizer.advance()
+        if var != "(":
+            var   = self.compileTerm(var)
+            code  = "</term>\n"
+            self.ostream.write(code)
+            code  = ""
+            return var
+        else:
+            code  = "<term>\n<symbol>" + str(var) + "</symbol>\n"
+            self.ostream.write(code)
+            var   = self.tokenizer.advance()
+            var   = self.compileExpression(var)
+            code += "<symbol>" + str(var) + "</symbol>\n</term>\n</term>\n"
+            self.ostream.write(code)
+            code  = ""
+            var   = self.tokenizer.advance()
+            return var
+    def compileNegOperator(self, token):
         code = "<symbol>" + str(token) + "</symbol>\n"
         self.ostream.write(code)
         var  = self.tokenizer.advance()
