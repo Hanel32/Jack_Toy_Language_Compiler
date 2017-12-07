@@ -427,9 +427,10 @@ class Compiler():
     def compileExpression(self, token):
         self.ostream.write("<expression>\n")
         var  = self.compileTerm(token)
+        self.ostream.write("</expression>\n")
         print "Returned from compileTerm: " + str(var)
         while var in ["+","<",">","=",",","&","-","*", "\"", "/"]:
-            print "More expressions!"
+            print "More expressions compileONE!"
             if var in ["<",">","\"","&"]:
                 if var == "<":
                     code = "<symbol>&lt;</symbol>\n"
@@ -445,8 +446,6 @@ class Compiler():
             code  = ""
             var   = self.tokenizer.advance()
             var   = self.compileTerm(var)
-        self.ostream.write("</expression>\n")
-            
             
         return var
         
@@ -455,7 +454,7 @@ class Compiler():
         self.ostream.write("<expressionList>\n")
         var  = self.compileExpression(token)
         print "Var is: " + str(var)
-        while var in ["+","<",">","=",",","&","-","*"]:
+        while var == ",":
             print "More expressions!"
             self.ostream.write("<symbol>" + str(var) + "</symbol>\n")
             var = self.compileExpression(self.tokenizer.advance())
