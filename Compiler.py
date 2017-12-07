@@ -109,6 +109,7 @@ class Compiler():
           var = self.compileVarDec(var)
       self.ostream.write("<statements>\n")
       while var not in ["}", None]:
+          print "Called compileStatment with :" + str(var)
           var = self.compileStatement(var)
       code += "</statements>\n<symbol>" + str(var) + "</symbol>\n</subroutineBody>\n</subroutineDec>\n"
       self.ostream.write(code)
@@ -309,11 +310,12 @@ class Compiler():
         code  = ""
         var   = self.tokenizer.advance()
         while var != "}":
-            print "called compile with token: " + var
+            print "else called compile with token: " + var
             var = self.compileStatement(var)
         code  = "</statements>\n<symbol>" + str(var) + "</symbol>\n"
         self.ostream.write(code)
         code  = ""
+        var   = self.tokenizer.advance()
         return var
     
     def RepresentsInt(self, s):
