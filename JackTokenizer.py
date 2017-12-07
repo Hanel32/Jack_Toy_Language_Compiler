@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Dec 01 21:32:53 2017
-
 @author: Carson
 """
 import re
