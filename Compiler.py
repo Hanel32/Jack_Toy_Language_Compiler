@@ -350,7 +350,7 @@ class Compiler():
             code  = ""
             var   = self.tokenizer.advance()
             var   = self.compileExpression(var)
-            code  = "<symbol>" + str(token) + "</symbol>\n"
+            code  = "<symbol>" + str(var) + "</symbol>\n"
             self.ostream.write(code)
             code  = ""
         elif self.tokenizer.peekAhead() == "[":
@@ -388,7 +388,7 @@ class Compiler():
         self.ostream.write(code)
         code  = ""
         var   = self.tokenizer.advance()
-        if var in ["+","<",">","=","&","-","*"]:
+        if var in ["|","+","<",">","=","&","-","*"]:
             if var in ["<",">","\"","&"]:
                 if var == "<":
                     code = "<symbol>&lt;</symbol>\n"
@@ -432,7 +432,7 @@ class Compiler():
         var  = self.compileTerm(token)
         print "WORKING A SINGLE EXPRESSION"
         print "Var is: " + str(var)
-        while var in ["+","<",">","=","&","-","*", "\"", "/"]:
+        while var in ["|","+","<",">","=","&","-","*", "\"", "/"]:
             print "Var is: " + str(var)
             if var in ["<",">","\"","&"]:
                 if var == "<":
