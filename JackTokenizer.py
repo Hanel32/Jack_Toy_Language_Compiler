@@ -143,24 +143,3 @@ class JackTokenizer():
         
     def peekAhead(self):
         return self.filecont[self.curritr+1]
-            
-            
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -420,6 +420,7 @@ class Compiler():
         else:
             code  = "<term>\n<symbol>" + str(var) + "</symbol>\n"
             self.ostream.write(code)
+            code = ""
             var   = self.tokenizer.advance()
             var   = self.compileExpression(var)
             code += "<symbol>" + str(var) + "</symbol>\n</term>\n</term>\n"
@@ -427,6 +428,7 @@ class Compiler():
             code  = ""
             var   = self.tokenizer.advance()
             return var
+
     def compileNegOperator(self, token):
         code = "<symbol>" + str(token) + "</symbol>\n"
         self.ostream.write(code)
