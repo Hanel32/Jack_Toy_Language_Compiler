@@ -61,7 +61,7 @@ class Compiler():
           var = self.tokenizer.advance()
           code += "<identifier>" + str(var) + "</identifier>\n"
           var = self.tokenizer.advance()
-      code += "<symbol>" + token + "</symbol>\n</classVarDec>\n"
+      code += "<symbol>" + var + "</symbol>\n</classVarDec>\n"
       self.ostream.write(code)
       code = ""
       var = self.tokenizer.advance()
@@ -285,7 +285,7 @@ class Compiler():
         var   = self.compileExpression(var)
         code  = "<symbol>" + str(var) + "</symbol>\n"
         var   = self.tokenizer.advance()
-        code  = "<symbol>" + str(var) + "</symbol>\n<statements>\n"
+        code  += "<symbol>" + str(var) + "</symbol>\n<statements>\n"
         self.ostream.write(code)
         code  = ""
         var   = self.tokenizer.advance()
@@ -412,7 +412,7 @@ class Compiler():
         var  = self.tokenizer.advance()
         if var != "(":
             var   = self.compileTerm(var)
-            code  = "</term>"
+            code  = "</term>\n"
             self.ostream.write(code)
             code  = ""
             return var
