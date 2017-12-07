@@ -384,6 +384,8 @@ class Compiler():
             else:
                 self.ostream.write("<expressionList>\n</expressionList>\n")
                 var   = self.tokenizer.advance()
+                self.ostream.write("<symbol>" + str(var) + "</symbol>")
+                var   = self.tokenizer.advance()
         else:
             code = "<identifier>" + str(token) + "</identifier>\n"
         print "At the end: " + code
