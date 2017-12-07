@@ -6,7 +6,7 @@ Created on Fri Dec 01 22:43:14 2017
 class Compiler():
     def __init__(self, ostream, tokenizer):
         self.tokenizer = tokenizer;
-        self.ostream = open(ostream, 'w')
+        self.ostream = open(ostream, 'w', 0)
         self.compileClass(tokenizer.advance())
         
     def compileClass(self, token):
@@ -382,7 +382,7 @@ class Compiler():
                 print "Token after expressionList = " + str(var)
                 code  = "</expressionList>\n<symbol>" + str(var) + "</symbol>\n"
             else:
-                self.ostream.write("<expressionList></expressionlist>\n")
+                self.ostream.write("<expressionList>\n</expressionList>\n")
                 self.ostream.write("<symbol>" + str(var) + "</symbol>")
                 var = self.tokenizer.advance()
         else:
