@@ -442,7 +442,7 @@ class Compiler():
                 elif var == "&":
                     code = "<symbol>&amp;</symbol>\n"
             else:
-                code  = "<symbol>" + str(var) + "</symbol>"
+                code  = "<symbol>" + str(var) + "</symbol>\n"
             print "CompileExpression code: " + str(code)
             self.ostream.write(code)
             code  = ""
@@ -458,7 +458,7 @@ class Compiler():
         var  = self.compileExpression(token)
         print "Var is: " + str(var)
         while var == ",":
-            print "More expressions!"
+            print "More expressions! for " + self.tokenizer.peekAhead()
             self.ostream.write("<symbol>" + str(var) + "</symbol>\n")
             var = self.compileExpression(self.tokenizer.advance())
         return var
