@@ -432,7 +432,7 @@ class Compiler():
         var  = self.compileTerm(token)
         self.ostream.write("</expression>\n")
         print "Returned from compileTerm: " + str(var)
-        while var in ["+","<",">","=",",","&","-","*", "\"", "/"]:
+        while var in ["+","<",">","=","&","-","*", "\"", "/"]:
             print "More expressions compileONE!"
             if var in ["<",">","\"","&"]:
                 if var == "<":
