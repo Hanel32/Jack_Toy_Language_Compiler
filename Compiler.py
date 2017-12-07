@@ -303,12 +303,13 @@ class Compiler():
     
     def compileElse(self, token):
         code  = "<keyword>" + str(token) + "</keyword>\n"
-        var   = self.tokenizer.advance()
-        code += "<symbol>" + str(var) + "</symbol>\n<statements>\n"
+        
+        code += "<symbol>" + str(self.tokenizer.advance()) + "</symbol>\n<statements>\n"
         self.ostream.write(code)
         code  = ""
         var   = self.tokenizer.advance()
         while var != "}":
+            print "called compile with token: " + var
             var = self.compileStatement(var)
         code  = "</statements>\n<symbol>" + str(var) + "</symbol>\n"
         self.ostream.write(code)
