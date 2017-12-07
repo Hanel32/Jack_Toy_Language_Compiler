@@ -98,18 +98,19 @@ class JackTokenizer():
             return self.currCmd
         return 
     
-    def tokenType(self):
-        token = self.currToken
+    def tokenType(self, token):
+        print "MAXFLAG" + repr(token)
         if token in keywords:
             return "KEYWORD"
         if token in symbols:
             return "SYMBOL"
         if re.findall(identifier, token):
             return "IDENTIFIER"
-        if isValidConstant(int(token)):
+        if isValidConstant(token):
             return "INT_CONST"
         if re.findall(stringConst, token):
             return "STRING_CONST"
+        return "error - token not found!"
         
     def keyWord(self):
         if self.tokenType() == "KEYWORD":
