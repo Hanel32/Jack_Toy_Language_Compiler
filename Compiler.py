@@ -383,7 +383,7 @@ class Compiler():
                 code  = "</expressionList>\n<symbol>" + str(var) + "</symbol>\n"
             else:
                 self.ostream.write("<expressionList>\n</expressionList>\n")
-                self.ostream.write("<symbol>" + str(var) + "</symbol>")
+                self.ostream.write("<symbol>" + str(var) + "</symbol>\n")
                 var = self.tokenizer.advance()
         else:
             code = "<identifier>" + str(token) + "</identifier>\n"
