@@ -58,7 +58,6 @@ class Compiler():
       code  = ""
       var   = self.tokenizer.advance()
       while var == ",":
-          var = self.tokenizer.advance()
           code += "<symbol>" + str(var) + "</symbol>\n"
           var = self.tokenizer.advance()
           code += "<identifier>" + str(var) + "</identifier>\n"
@@ -99,7 +98,7 @@ class Compiler():
       code  = ""
       var   = self.tokenizer.advance()
       if var != ")":
-          self.compileParameterList(var)
+          var = self.compileParameterList(var)
       else:
           code += "<parameterList>\n</parameterList>\n"
       code += "<symbol>" + str(var) + "</symbol>\n"
@@ -130,11 +129,13 @@ class Compiler():
       self.ostream.write(code)
       code  = ""
       var   = self.tokenizer.advance()
-      if var == ",":
+      while var == ",":
           code += "<symbol>" + var + "</symbol>\n"
+          code += "<keyword>" + str(self.tokenizer.advance()) + "</keyword>\n"
+          code += "<identifier>" + str(self.tokenizer.advance()) + "</identifier>\n"
           self.ostream.write(code)
           var = self.tokenizer.advance()
-          return self.compileParamList(token)
+          code  = ""
       self.ostream.write("</parameterList>\n")
       return var  
         
@@ -198,6 +199,8 @@ class Compiler():
         var   = self.tokenizer.advance()
         if var != ")":
             var   = self.compileExpressionList(var)
+        else:
+            code += "<expressionList>\n"
         code += "</expressionList>\n<symbol>" + str(var) + "</symbol>\n"
         var   = self.tokenizer.advance()
         code += "<symbol>" + str(var) + "</symbol>\n</doStatement>\n"
