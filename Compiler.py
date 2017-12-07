@@ -430,7 +430,6 @@ class Compiler():
     def compileExpression(self, token):
         self.ostream.write("<expression>\n")
         var  = self.compileTerm(token)
-        self.ostream.write("</expression>\n")
         print "WORKING A SINGLE EXPRESSION"
         print "Var is: " + str(var)
         while var in ["+","<",">","=","&","-","*", "\"", "/"]:
@@ -452,6 +451,7 @@ class Compiler():
             var   = self.tokenizer.advance()
             print "CALLING ANOTHER TERM"
             var   = self.compileTerm(var)
+        self.ostream.write("</expression>\n")
         print "COMPILED A SINGLE EXPRESSION"
         return var
         
