@@ -302,7 +302,7 @@ class Compiler():
         return var
     
     def compileElse(self, token):
-        code  = "<elseStatement>\n<keyword>" + str(token) + "</keyword>\n"
+        code  = "<keyword>" + str(token) + "</keyword>\n"
         var   = self.tokenizer.advance()
         code += "<symbol>" + str(var) + "</symbol>\n<statements>\n"
         self.ostream.write(code)
@@ -310,7 +310,7 @@ class Compiler():
         var   = self.tokenizer.advance()
         while var != "}":
             var = self.compileStatement(var)
-        code  = "</statements>\n<symbol>" + str(var) + "</symbol>\n</elseStatement>\n"
+        code  = "</statements>\n<symbol>" + str(var) + "</symbol>\n"
         self.ostream.write(code)
         code  = ""
         return var
@@ -350,7 +350,7 @@ class Compiler():
             code  = ""
             var   = self.tokenizer.advance()
             var   = self.compileExpression(var)
-            code  = "<symbol>" + str(token) + "</symbol>\n"
+            code  = "<symbol>" + str(var) + "</symbol>\n"
             self.ostream.write(code)
             code  = ""
         elif self.tokenizer.peekAhead() == "[":
@@ -382,10 +382,8 @@ class Compiler():
                 print "Token after expressionList = " + str(var)
                 code  = "</expressionList>\n<symbol>" + str(var) + "</symbol>\n"
             else:
-                self.ostream.write("<expressionList></expressionList>\n")
-                self.ostream.write("<symbol>" + str(var) + "</symbol>\n")
-                var = self.tokenizer.advance()
-                self.ostream.write("<symbol>" + str(var) + "</symbol>\n")
+                self.ostream.write("<expressionList>\n</expressionList>\n")
+                var   = self.tokenizer.advance()
         else:
             code = "<identifier>" + str(token) + "</identifier>\n"
         print "At the end: " + code
@@ -393,7 +391,7 @@ class Compiler():
         self.ostream.write(code)
         code  = ""
         var   = self.tokenizer.advance()
-        if var in ["+","<",">","=","&","-","*"]:
+        if var in ["|", "+","<",">","=","&","-","*"]:
             if var in ["<",">","\"","&"]:
                 if var == "<":
                     code = "<symbol>&lt;</symbol>\n"
@@ -437,7 +435,7 @@ class Compiler():
         var  = self.compileTerm(token)
         print "WORKING A SINGLE EXPRESSION"
         print "Var is: " + str(var)
-        while var in ["+","<",">","=","&","-","*", "\"", "/"]:
+        while var in ["|","+","<",">","=","&","-","*", "\"", "/"]:
             print "Var is: " + str(var)
             if var in ["<",">","\"","&"]:
                 if var == "<":
